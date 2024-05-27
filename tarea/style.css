@@ -1,0 +1,28 @@
+
+body {
+    margin: 0;
+    padding: 0;
+    background-image: url('img/fondoP.jpg');
+    background-size: cover; /* Ajusta el tamaño de la imagen para cubrir el fondo */
+    background-position: center; /* Centra la imagen en el fondo */
+    background-repeat: no-repeat; /* Evita la repetición de la imagen */
+    font-family: Arial, sans-serif; /* Establece la fuente de texto predeterminada */
+    /* Añade estilos adicionales según sea necesario */
+}
+
+body {
+    text-align: center;
+}
+
+h1 {
+    font-size: 55px;
+    border: 2px solid #000; /* Ancho y color del contorno */
+    padding: 10px; /* Espaciado interno alrededor del texto */
+    width: 400px; /* Ancho del contorno */
+    margin: 0 auto; /* Centra el contorno horizontalmente */
+    /* Añade estilos adicionales según sea necesario */
+}
+
+h2 {
+    font-size: 40px;
+}

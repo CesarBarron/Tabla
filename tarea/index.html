@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guardar y Cargar Datos en Archivo</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Formulario para Agregar Datos</h2>
+    <form id="dataForm">
+        <label for="name">Nombre:</label>
+        <input type="text" id="name" name="name" required>
+        <label for="age">Edad:</label>
+        <input type="number" id="age" name="age" required>
+        <button type="submit">Agregar</button>
+    </form>
+
+    <h2>Datos Ingresados</h2>
+    <table id="dataTable">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Edad</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <button id="saveButton">Guardar Datos</button>
+    <button id="loadButton">Cargar Datos</button>
+    <button onclick="location.href='view_data.php'">Ver y Borrar Datos Guardados</button>
+
+    <script>
+        document.getElementById('dataForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Obtener valores del formulario
+            const name = document.getElementById('name').value;
+            const age = document.getElementById('age').value;
+
+            // Crear una nueva fila en la tabla
+            const table = document.getElementById('dataTable').getElementsByTagName('tbody')[0];
+            const newRow = table.insertRow();
+            const nameCell = newRow.insertCell(0);
+            const ageCell = newRow.insertCell(1);
+            const actionCell = newRow.insertCell(2); // Nueva celda para acciones
+            nameCell.textContent = name;
+            ageCell.textContent = age;
+            actionCell.innerHTML = `<button onclick="deleteRow(this)">Eliminar</button>`;
+
+            // Limpiar formulario
+            document.getElementById('dataForm').reset();
+        });
+
+        document.getElementById('saveButton').addEventListener('click', function() {
+            const table = document.getElementById('dataTable');
+            const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+            let data = [];
+
+            // Recopilar datos de la tabla
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                const rowData = {
+                    name: cells[0].textContent,
+                    age: cells[1].textContent
+                };
+                data.push(rowData);
+            }
+
+            // Enviar datos al servidor
+            fetch('save_data.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.text())
+            .then(data => {
+                alert('Datos guardados con éxito.');
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        });
+
+        document.getElementById('loadButton').addEventListener('click', function() {
+            // Solicitar datos al servidor
+            fetch('load_data.php')
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.getElementById('dataTable').getElementsByTagName('tbody')[0];
+                tableBody.innerHTML = ''; // Limpiar tabla existente
+
+                // Agregar filas a la tabla
+                data.forEach((row, index) => {
+                    const newRow = tableBody.insertRow();
+                    const nameCell = newRow.insertCell(0);
+                    const ageCell = newRow.insertCell(1);
+                    const actionCell = newRow.insertCell(2); // Nueva celda para acciones
+                    nameCell.textContent = row.name;
+                    ageCell.textContent = row.age;
+                    actionCell.innerHTML = `<button onclick="deleteRow(this, ${index})">Eliminar</button>`;
+                });
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        });
+
+        function deleteRow(button, index) {
+            const table = document.getElementById('dataTable');
+            table.deleteRow(button.parentElement.parentElement.rowIndex);
+
+            // Enviar solicitud al servidor para eliminar la fila
+            fetch('delete_data.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ index: index })
+            })
+            .then(response => response.text())
+            .then(data => {
+                alert('Fila eliminada con éxito.');
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+
+<article>
+    <h2>Trabajo final</h2><br/>
+    <img src="img/Akko.png" width="200"> <br/>
+</article>
+
+<footer>
+    <p>Copyright 2024</p>
+</footer>
+
+</body>
+</html>
